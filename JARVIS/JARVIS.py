@@ -6,7 +6,7 @@ import datetime
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[0].id)
-newVoiceRate = 140 #I am setting the speed of the voice, 140 means 140 words per minute
+newVoiceRate = 160 #I am setting the speed of the voice, 140 means 140 words per minute
 engine.setProperty('rate', newVoiceRate)
 
 def speak(audio): #this function is used for converting text to speech
