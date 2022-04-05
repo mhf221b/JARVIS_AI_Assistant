@@ -1,7 +1,7 @@
 import pyttsx3
 import datetime
-import speech_recognition as sr
-import pyaudio
+import speech_recognition as sr #For recognizing my speech
+import pyaudio                  # For using the Microphone
 
 
 
@@ -45,7 +45,8 @@ def wishMe(): #This wish will execuse every time I start up this software
     date()
     speak("What can I assist you with?")
 
-def takeCommand():
+def takeCommand():  #This is the function which recognizes my speech
+    speak("I am Listening")
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
@@ -63,8 +64,9 @@ def takeCommand():
     return query
 
 
+wishMe()
+
 takeCommand()
-# wishMe()
 
 
 
