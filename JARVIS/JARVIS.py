@@ -1,5 +1,7 @@
 import pyttsx3
 import datetime
+import speech_recognition as sr
+import pyaudio
 
 
 
@@ -43,7 +45,28 @@ def wishMe(): #This wish will execuse every time I start up this software
     date()
     speak("What can I assist you with?")
 
-wishMe()
+def takeCommand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.adjust_for_ambient_noise(source)
+        r.pause_threshold = 1
+        audio = r.listen(source)
+    try:
+        print("Recognizing...")
+        query = r.recognize_google(audio, language='en=US')
+        print(query)
+    except Exception as e:
+        print(e)
+        speak("Can't hear")
+        return "None"
+    return query
+
+
+takeCommand()
+# wishMe()
+
+
 
 # time()
 # date()
