@@ -1,3 +1,5 @@
+
+from sqlite3 import Date
 import pyttsx3
 import datetime
 import speech_recognition as sr #For recognizing my speech
@@ -8,7 +10,7 @@ import pyaudio                  # For using the Microphone
 engine = pyttsx3.init()
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[0].id)
-newVoiceRate = 175 #I am setting the speed of the voice, 140 means 140 words per minute
+newVoiceRate = 190 #I am setting the speed of the voice, 140 means 140 words per minute
 engine.setProperty('rate', newVoiceRate)
 
 def speak(audio): #this function is used for converting text to speech
@@ -33,40 +35,56 @@ def wishMe(): #This wish will execuse every time I start up this software
     hour = datetime.datetime.now().hour
     print(hour)
     if(hour >= 6 and hour <= 12):
-        speak("Good Morning, Sir!")
+        speak("Good Morning, Boss!")
     elif(hour>12 and hour<=18 ):
-        speak("Good Afternoon, Sir!")
+        speak("Good Afternoon, Boss!")
     elif(hour>18 and hour<=23):
-        speak("Good Evening, Sir!")
+        speak("Good Evening, Boss!")
     else:
-        speak("Good Night Sir!")
+        speak("Good Night Boss!")
     speak("Hello! JARVIS at your service")
-    time()
-    date()
+    # time()
+    # date()
     speak("What can I assist you with?")
+    speak("I am Listening")
 
 def takeCommand():  #This is the function which recognizes my speech
-    speak("I am Listening")
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
         r.adjust_for_ambient_noise(source)
-        r.pause_threshold = 1
+        #r.pause_threshold = 1
         audio = r.listen(source)
     try:
         print("Recognizing...")
         query = r.recognize_google(audio, language='en=US')
         print(query)
+        speak(query)
     except Exception as e:
         print(e)
-        speak("Can't hear")
+        speak("Sorry, I can't hear you")
         return "None"
     return query
 
 
-wishMe()
+if __name__ =="__main__": #Implementing the main function
+    wishMe()
+    
+    while True:
+        query = takeCommand().lower()
+        print(query)
 
-takeCommand()
+        if "time" in query:
+            time()
+        elif "date" in query:
+            date()
+        elif "offline" in query:
+            speak("Going Offline")
+            quit()
+
+
+
+# takeCommand()
 
 
 
