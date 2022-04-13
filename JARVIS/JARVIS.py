@@ -4,7 +4,8 @@ import pyttsx3
 import datetime
 import speech_recognition as sr #For recognizing my speech
 import pyaudio                  # For using the Microphone
-
+import wikipedia #used the command pip install wikipedia to get this module
+import webbrowser as wb #For opening browser
 
 
 engine = pyttsx3.init()
@@ -58,7 +59,6 @@ def takeCommand():  #This is the function which recognizes my speech
     try:
         print("Recognizing...")
         query = r.recognize_google(audio, language='en=US')
-        print(query)
         speak(query)
     except Exception as e:
         print(e)
@@ -81,6 +81,17 @@ if __name__ =="__main__": #Implementing the main function
         elif "offline" in query:
             speak("Going Offline")
             quit()
+        elif "wikipedia" in query:
+            speak("Searching")
+            query = query.replace("wikipedia", "")
+            result = wikipedia.summary (query, sentences = 2)
+            speak(result)
+        elif "search in chrome" in query:
+            speak("What should I search for?")
+            chromepath = "C:/Users/DOLPHIN/AppData/Local/Google/Chrome/Application/chrome.exe %s"
+            
+            search = takeCommand().lower()
+            wb.get(chromepath).open_new_tab(search + ".com")
 
 
 
