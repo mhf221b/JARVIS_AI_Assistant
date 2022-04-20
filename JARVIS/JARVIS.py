@@ -12,7 +12,6 @@ import os
 import random
 import requests
 import pyautogui
-import win32api
 import sys
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtCore import QTimer, QTime, QDate, Qt
@@ -22,7 +21,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.uic import loadUiType
 from JarvisGUI import Ui_JarvisFrontEnd
-
+import pywhatkit as kit
+import psutil
+import pyjokes
 
 
 
@@ -38,7 +39,7 @@ def speak(audio): #this function is used for converting text to speech
     engine.say(audio)
     engine.runAndWait()
 
-speak("Initializing Jarvis")
+# speak("Initializing Jarvis")
 
 url = "https://www.google.com/"
 timeout = 5
@@ -49,9 +50,9 @@ timeout = 5
 #     speak("Connected to Internet")
 #     speak("All systems Online")
 # except (requests.ConnectionError, requests.Timeout) as exception:
-    # print("No internet Detected")
-    # print("All systems offline")
-    # exit()
+#     print("No internet Detected")
+#     print("All systems offline")
+#     exit()
 
 
 def time(): #This Function can say what time it is
@@ -82,11 +83,33 @@ def wishMe(): #This wish will execuse every time I start up this software
     speak("What can I assist you with?")
     speak("I am Listening")
 
+def screenshot(): 
+    img = pyautogui.screenshot()
+    img.save("E:\Books\CSE 410\JARVIS AI Assistant\JARVIS_AI_Assistant\JARVIS\Screenshots\ss.png")
+
+def cpu(): 
+    usage = str(psutil.cpu_percent())
+    speak("cpu is at"+usage)
+
+def jokes():
+    speak(pyjokes.get_joke())
+
 class MainThread(QThread):
     def __init__(self):
         super(MainThread, self).__init__()
     
     def run(self):
+        speak("Initializing Jarvis")
+        try: 
+            request = requests.get(url, timeout=timeout)
+            print("Internet connection detected")
+            speak("Connected to Internet")
+            speak("All systems Online")
+        except (requests.ConnectionError, requests.Timeout) as exception:
+            print("No internet Detected")
+            print("All systems offline")
+            exit()
+        
         self.taskExecution()
 
     def takeCommand(self):  #This is the function which recognizes my speech
@@ -94,7 +117,7 @@ class MainThread(QThread):
         with sr.Microphone() as source:
             print("Listening...")
             r.adjust_for_ambient_noise(source)
-            #r.pause_threshold = 1
+            r.pause_threshold = 1
             audio = r.listen(source)
         try:
             print("Recognizing...")
@@ -117,37 +140,37 @@ class MainThread(QThread):
             self.query = self.takeCommand().lower()
             print(self.query)
 
-            if "time" in self.query:
+            if "time" in self.query: #1. For knowing time
                 time()
-            elif "date" in self.query:
+            elif "date" in self.query: #2. For knowing date
                 date()
-            elif "offline" in self.query:
+            elif "offline" in self.query: #3. For putting the system offline
                 speak("Going Offline")
                 quit()
-            elif "wikipedia" in self.query:
+            elif "wikipedia" in self.query: #4. For searching in Wikipedia
                 speak("Searching")
                 query = query.replace("wikipedia", "")
                 result = wikipedia.summary (query, sentences = 2)
                 speak(result)
-            elif "how are you" in self.query:
+            elif "how are you" in self.query: #5. For normal conv(1)
                 speak("I am fine, Thank you!")
                 speak("What about you")
-            elif "good" in self.query:
+            elif "good" in self.query: #6. For normal conv(2)
                 speak("I'm glad to hear that.")
                 speak("what do you want me to do?")
 
-            elif "fine" in self.query:
+            elif "fine" in self.query: #7. For normal conv(3)
                 speak("I'm glad to hear that.")
                 speak("what do you want me to do?")
 
 
-            elif "open chrome" in self.query:
+            elif "open chrome" in self.query: #8. For browsing chrome
                 speak("Where should I go?")
                 chromepath = "C:/Users/DOLPHIN/AppData/Local/Google/Chrome/Application/chrome.exe %s"
                 
                 search = self.takeCommand().lower()
                 wb.get(chromepath).open_new_tab(search + ".com")
-            elif "search in chrome" in self.query:
+            elif "search in chrome" in self.query: #9. For searching chrome
                 chromepath = "C:/Users/DOLPHIN/AppData/Local/Google/Chrome/Application/chrome.exe %s"
                 speak("What should I search for?")
                 query = self.takeCommand().lower()
@@ -156,11 +179,28 @@ class MainThread(QThread):
                 wb.get(chromepath).open("https://www.google.com/search?q="+query)
                 
 
-            elif "play a song" in self.query:
-                songs_dir = "C:/Users/DOLPHIN/Downloads/Music %s"
+            elif "play a song" and "device" in self.query: #10. Playing a song from Device
+                songs_dir = "C:/Users/DOLPHIN/Downloads/Music"
                 songs = os.listdir(songs_dir)
-                n = random(0, 107)
+                n = random.randint(0, 107)
                 os.startfile(os.path.join(songs_dir, songs[n] ))
+            
+            elif "play a song" and "youtube" in self.query: #11. Playing a song from Youtube
+                speak("what song should i play?")
+                query = self.takeCommand().lower()
+                query = query.replace("play", "")
+                kit.playonyt(query)
+
+            elif "screenshot" in self.query: #12. For taking Screenshot
+                screenshot()
+                speak("screenshot taken")
+
+            elif "cpu" in self.query: #13. For getting the cpu update
+                cpu()
+
+            elif "joke" in  self.query:
+                jokes()
+
 
 startExecution = MainThread()
 
@@ -186,7 +226,8 @@ class Main(QMainWindow):
     def showTime(self):
         current_time = QTime.currentTime()
         current_date = QDate.currentDate()
-        Label_time = current_time.toString('hh: mm: pp')
+
+        Label_time = current_time.toString('hh: mm: ss')
         Label_date = current_date.toString(Qt.ISODate) 
 
         self.ui.textBrowser.setText("Date:"+Label_date)
