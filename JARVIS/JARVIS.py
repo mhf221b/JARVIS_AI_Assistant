@@ -1,7 +1,7 @@
-from socket import timeout
+from socket import timeout # For recognizing timeout before connecting to internet
 from socket import *
 from sqlite3 import Date
-from urllib import request
+# from urllib import request
 import pyttsx3
 import datetime
 import speech_recognition as sr #For recognizing my speech
@@ -142,16 +142,22 @@ class MainThread(QThread):
 
             if "time" in self.query: #1. For knowing time
                 time()
+                print("The time is: ")
             elif "date" in self.query: #2. For knowing date
                 date()
+                print("The date is:")
             elif "offline" in self.query: #3. For putting the system offline
                 speak("Going Offline")
                 quit()
             elif "wikipedia" in self.query: #4. For searching in Wikipedia
                 speak("Searching")
-                query = query.replace("wikipedia", "")
-                result = wikipedia.summary (query, sentences = 2)
-                speak(result)
+                query = self.query.replace("wikipedia", "")
+                try:
+                    result = wikipedia.summary (query, sentences = 2)
+                    speak(result)
+                    print("Wikipedia Search Complete.")
+                except:
+                    speak("sorry, can't find the result")
             elif "how are you" in self.query: #5. For normal conv(1)
                 speak("I am fine, Thank you!")
                 speak("What about you")
@@ -170,6 +176,7 @@ class MainThread(QThread):
                 
                 search = self.takeCommand().lower()
                 wb.get(chromepath).open_new_tab(search + ".com")
+                print("Opening "+search+".com")
             elif "search in chrome" in self.query: #9. For searching chrome
                 chromepath = "C:/Users/DOLPHIN/AppData/Local/Google/Chrome/Application/chrome.exe %s"
                 speak("What should I search for?")
@@ -177,6 +184,7 @@ class MainThread(QThread):
                 query = query.replace("search for", "")
                 speak("Searching for"+query+"in chrome")
                 wb.get(chromepath).open("https://www.google.com/search?q="+query)
+                print("Searching for "+query)
                 
 
             elif "play a song" and "device" in self.query: #10. Playing a song from Device
@@ -184,22 +192,27 @@ class MainThread(QThread):
                 songs = os.listdir(songs_dir)
                 n = random.randint(0, 107)
                 os.startfile(os.path.join(songs_dir, songs[n] ))
+                print("Playing song from Device")
             
             elif "play a song" and "youtube" in self.query: #11. Playing a song from Youtube
                 speak("what song should i play?")
                 query = self.takeCommand().lower()
                 query = query.replace("play", "")
                 kit.playonyt(query)
+                print("Playing "+query+" from Youtube")
 
             elif "screenshot" in self.query: #12. For taking Screenshot
                 screenshot()
                 speak("screenshot taken")
+                print("Screenshot Taken")
 
             elif "cpu" in self.query: #13. For getting the cpu update
                 cpu()
+                print("The CPU Usage is...")
 
-            elif "joke" in  self.query:
+            elif "joke" in  self.query: #14. For telling a joke
                 jokes()
+                print("Here's a joke for you...")
 
 
 startExecution = MainThread()
